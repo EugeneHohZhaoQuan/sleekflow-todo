@@ -14,6 +14,29 @@ const getTodoItems = async (): Promise<TodoItem[]> => {
   return response.data;
 };
 
+const postTodoApi = async (todoItem: TodoItem) => {
+  try {
+    const response = await axiosInstance.post('/todo', todoItem);
+    return response.data;
+  } catch (error) {
+    console.error('Error posting todo item', error);
+    throw error;
+  }
+};
+
+const deleteTodoApi = async (id: number) => {
+  try {
+    const response = await axiosInstance.delete(`/todo/${id}`);
+
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    throw error;
+  }
+};
+
 export const todoApi = {
   getTodoItems,
+  postTodoApi,
+  deleteTodoApi,
 };
