@@ -5,13 +5,18 @@ import { v4 as uuidv4 } from 'uuid';
 import { todoApi } from '../api/getTodoApi';
 import { TodoItem } from '../types/types';
 import {
+  Button,
+  Checkbox,
+  Column,
+  ColumnTitle,
+  TaskBoardContainer,
   TodoItemContainer,
-  TodoListContainer,
+  TodoContainer,
 } from '../styles/TodoList.styles';
+import AddTask from './AddTask';
 
 const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<TodoItem[]>([]);
-  const [task, setTask] = useState('');
 
   const { getTodoItems, postTodoApi, deleteTodoApi, updateTodoApi } = todoApi;
 
@@ -28,14 +33,6 @@ const TodoList: React.FC = () => {
     fetchTodos();
   }, []);
 
-  // const toggleComplete = (id: number) => {
-  //   setTodos(
-  //     todos.map((todo) =>
-  //       todo.id === id ? { ...todo, isComplete: !todo.isComplete } : todo,
-  //     ),
-  //   );
-  // };
-
   const deleteTask = async (id: number) => {
     const response = await deleteTodoApi(id);
 
@@ -48,24 +45,18 @@ const TodoList: React.FC = () => {
     return numericId;
   };
 
-  const handleFormSubmit = async (e: any) => {
-    e.preventDefault(); // Prevent the default form submission
-
+  const handleFormSubmit = async (task: TodoItem) => {
     const newTask: TodoItem = {
       id: generateNumericID(),
-      name: task,
-      description: task,
+      name: task.name,
+      description: task.description,
       dueDate: new Date(),
-      status: 'Inporgress',
+      status: 'Not Started',
     };
 
     const response = await postTodoApi(newTask);
 
     fetchTodos();
-  };
-
-  const handleInputChange = (e: any) => {
-    setTask(e.target.value);
   };
 
   const handleCheckboxChange = async (todo: TodoItem) => {
@@ -79,22 +70,44 @@ const TodoList: React.FC = () => {
     fetchTodos();
   };
 
-  return (
-    <TodoListContainer>
-      <form onSubmit={handleFormSubmit}>
-        <input value={task} onChange={handleInputChange} />
-        <button type="submit">Add Task</button>
-      </form>
-      {todos.map((todo) => (
-        <TodoItemContainer>
-          <input type="checkbox" onChange={() => handleCheckboxChange(todo)} />
-          <div>{todo.name}</div>
+  const renderTasks = (status: string) =>
+    todos
+      .filter((todo) => todo.status === status)
+      .map((todo) => (
+        <TodoItemContainer key={todo.id}>
+          <div>
+            {/* <Checkbox
+              type="checkbox"
+              onChange={() => handleCheckboxChange(todo)}
+              checked={todo.status === 'Complete'}
+            /> */}
+            <span>{todo.name}</span>
+          </div>
           <div>{todo.description}</div>
-          <div>{todo.status}</div>
-          <button onClick={() => deleteTask(todo.id)}>Delete</button>
+          <Button onClick={() => deleteTask(todo.id)}>Delete</Button>
         </TodoItemContainer>
-      ))}
-    </TodoListContainer>
+      ));
+
+  return (
+    <TodoContainer>
+      <AddTask handleFormSubmit={handleFormSubmit} />
+      <>
+        <TaskBoardContainer>
+          <Column>
+            <ColumnTitle>Not Started</ColumnTitle>
+            {renderTasks('Not Started')}
+          </Column>
+          <Column>
+            <ColumnTitle>In Progress</ColumnTitle>
+            {renderTasks('In Progress')}
+          </Column>
+          <Column>
+            <ColumnTitle>Complete</ColumnTitle>
+            {renderTasks('Complete')}
+          </Column>
+        </TaskBoardContainer>
+      </>
+    </TodoContainer>
   );
 };
 
