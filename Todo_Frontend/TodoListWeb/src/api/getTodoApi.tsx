@@ -35,8 +35,20 @@ const deleteTodoApi = async (id: number) => {
   }
 };
 
+const updateTodoApi = async (id: number, todoItem: TodoItem) => {
+  try {
+    const response = await axiosInstance.put(`/todo/${id}`, todoItem);
+
+    return response.data;
+  } catch (error) {
+    console.error('Error updating task:', error);
+    throw error;
+  }
+};
+
 export const todoApi = {
   getTodoItems,
   postTodoApi,
   deleteTodoApi,
+  updateTodoApi,
 };

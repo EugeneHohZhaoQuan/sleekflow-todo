@@ -13,7 +13,7 @@ const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [task, setTask] = useState('');
 
-  const { getTodoItems, postTodoApi, deleteTodoApi } = todoApi;
+  const { getTodoItems, postTodoApi, deleteTodoApi, updateTodoApi } = todoApi;
 
   const fetchTodos = async () => {
     try {
@@ -68,6 +68,17 @@ const TodoList: React.FC = () => {
     setTask(e.target.value);
   };
 
+  const handleCheckboxChange = async (todo: TodoItem) => {
+    const updatedTask = {
+      ...todo,
+      status: 'Complete',
+    };
+
+    const response = await updateTodoApi(todo.id, updatedTask);
+
+    fetchTodos();
+  };
+
   return (
     <TodoListContainer>
       <form onSubmit={handleFormSubmit}>
@@ -76,6 +87,7 @@ const TodoList: React.FC = () => {
       </form>
       {todos.map((todo) => (
         <TodoItemContainer>
+          <input type="checkbox" onChange={() => handleCheckboxChange(todo)} />
           <div>{todo.name}</div>
           <div>{todo.description}</div>
           <div>{todo.status}</div>
