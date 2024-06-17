@@ -13,10 +13,32 @@ import {
   TodoItemContainer,
   TodoContainer,
 } from '../styles/TodoList.styles';
+
+import FilterSort from './FilterSort';
 import AddTask from './AddTask';
+
+interface FilterOptions {
+  status: string;
+  dueDate: string;
+}
+
+interface SortOptions {
+  sortBy: string;
+  order: string;
+}
 
 const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<TodoItem[]>([]);
+
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    status: 'all',
+    dueDate: '',
+  });
+
+  const [sortOptions, setSortOptions] = useState<SortOptions>({
+    sortBy: 'due-date',
+    order: 'asc',
+  });
 
   const { getTodoItems, postTodoApi, deleteTodoApi, updateTodoApi } = todoApi;
 
@@ -70,17 +92,51 @@ const TodoList: React.FC = () => {
     fetchTodos();
   };
 
+  const applyFilterAndSort = (todos: TodoItem[]) => {
+    let filteredTodos = todos;
+
+    // Apply filter
+    if (filterOptions.status !== 'all') {
+      filteredTodos = filteredTodos.filter(
+        (todo) => todo.status === filterOptions.status,
+      );
+    }
+    if (filterOptions.dueDate) {
+      filteredTodos = filteredTodos.filter(
+        (todo) =>
+          new Date(todo.dueDate).toDateString() ===
+          new Date(filterOptions.dueDate).toDateString(),
+      );
+    }
+
+    // Apply sort
+    filteredTodos.sort((a, b) => {
+      if (sortOptions.sortBy === 'due-date') {
+        const dateA = new Date(a.dueDate).getTime();
+        const dateB = new Date(b.dueDate).getTime();
+        return sortOptions.order === 'asc' ? dateA - dateB : dateB - dateA;
+      } else if (sortOptions.sortBy === 'name') {
+        return sortOptions.order === 'asc'
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
+      }
+      return 0;
+    });
+
+    return filteredTodos;
+  };
+
   const renderTasks = (status: string) =>
-    todos
+    applyFilterAndSort(todos)
       .filter((todo) => todo.status === status)
       .map((todo) => (
         <TodoItemContainer key={todo.id}>
           <div>
             {/* <Checkbox
-              type="checkbox"
-              onChange={() => handleCheckboxChange(todo)}
-              checked={todo.status === 'Complete'}
-            /> */}
+            type="checkbox"
+            onChange={() => handleCheckboxChange(todo)}
+            checked={todo.status === 'Complete'}
+          /> */}
             <span>{todo.name}</span>
           </div>
           <div>{todo.description}</div>
@@ -90,7 +146,13 @@ const TodoList: React.FC = () => {
 
   return (
     <TodoContainer>
-      <AddTask handleFormSubmit={handleFormSubmit} />
+      <div style={{ display: 'flex' }}>
+        <AddTask handleFormSubmit={handleFormSubmit} />
+        <FilterSort
+          onFilterChange={setFilterOptions}
+          onSortChange={setSortOptions}
+        />
+      </div>
       <>
         <TaskBoardContainer>
           <Column>
