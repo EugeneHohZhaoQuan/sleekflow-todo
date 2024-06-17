@@ -1,12 +1,10 @@
-// src/components/TodoList.tsx
 import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 
 import { todoApi } from '../api/getTodoApi';
-import { TodoItem } from '../types/types';
+import { FilterOptions, SortOptions, TodoItem } from '../types/types';
 import {
   Button,
-  Checkbox,
   Column,
   ColumnTitle,
   TaskBoardContainer,
@@ -16,16 +14,7 @@ import {
 
 import FilterSort from './FilterSort';
 import AddTask from './AddTask';
-
-interface FilterOptions {
-  status: string;
-  dueDate: string;
-}
-
-interface SortOptions {
-  sortBy: string;
-  order: string;
-}
+import { formatDate, generateNumericID } from '../common/CommonFunc';
 
 const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<TodoItem[]>([]);
@@ -42,29 +31,22 @@ const TodoList: React.FC = () => {
 
   const { getTodoItems, postTodoApi, deleteTodoApi, updateTodoApi } = todoApi;
 
+  useEffect(() => {
+    fetchTodos();
+  }, [filterOptions, sortOptions]);
+
   const fetchTodos = async () => {
     try {
-      const todoItems = await getTodoItems();
+      const todoItems = await getTodoItems(filterOptions, sortOptions);
       setTodos(todoItems);
     } catch (error) {
       console.error('Error fetching todos:', error);
     }
   };
 
-  useEffect(() => {
-    fetchTodos();
-  }, []);
-
   const deleteTask = async (id: number) => {
-    const response = await deleteTodoApi(id);
-
+    await deleteTodoApi(id);
     fetchTodos();
-  };
-
-  const generateNumericID = (): number => {
-    const uuid = uuidv4();
-    const numericId = parseInt(uuid.split('-').join('').slice(0, 15), 16); // Convert part of the UUID to a number
-    return numericId;
   };
 
   const handleFormSubmit = async (task: TodoItem) => {
@@ -76,8 +58,7 @@ const TodoList: React.FC = () => {
       status: 'Not Started',
     };
 
-    const response = await postTodoApi(newTask);
-
+    await postTodoApi(newTask);
     fetchTodos();
   };
 
@@ -87,47 +68,22 @@ const TodoList: React.FC = () => {
       status: 'Complete',
     };
 
-    const response = await updateTodoApi(todo.id, updatedTask);
-
+    await updateTodoApi(todo.id, updatedTask);
     fetchTodos();
   };
 
-  const applyFilterAndSort = (todos: TodoItem[]) => {
-    let filteredTodos = todos;
+  const updateTask = async (id: number, todo: TodoItem) => {
+    const updatedTask = {
+      ...todo,
+      status: todo.status === 'Not Started' ? 'In Progress' : 'Complete',
+    };
 
-    // Apply filter
-    if (filterOptions.status !== 'all') {
-      filteredTodos = filteredTodos.filter(
-        (todo) => todo.status === filterOptions.status,
-      );
-    }
-    if (filterOptions.dueDate) {
-      filteredTodos = filteredTodos.filter(
-        (todo) =>
-          new Date(todo.dueDate).toDateString() ===
-          new Date(filterOptions.dueDate).toDateString(),
-      );
-    }
-
-    // Apply sort
-    filteredTodos.sort((a, b) => {
-      if (sortOptions.sortBy === 'due-date') {
-        const dateA = new Date(a.dueDate).getTime();
-        const dateB = new Date(b.dueDate).getTime();
-        return sortOptions.order === 'asc' ? dateA - dateB : dateB - dateA;
-      } else if (sortOptions.sortBy === 'name') {
-        return sortOptions.order === 'asc'
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name);
-      }
-      return 0;
-    });
-
-    return filteredTodos;
+    await updateTodoApi(todo.id, updatedTask);
+    fetchTodos();
   };
 
   const renderTasks = (status: string) =>
-    applyFilterAndSort(todos)
+    todos
       .filter((todo) => todo.status === status)
       .map((todo) => (
         <TodoItemContainer key={todo.id}>
@@ -140,6 +96,10 @@ const TodoList: React.FC = () => {
             <span>{todo.name}</span>
           </div>
           <div>{todo.description}</div>
+          <div>{formatDate(todo.dueDate.toString())}</div>
+          {todo.status !== 'Complete' && (
+            <Button onClick={() => updateTask(todo.id, todo)}>Update</Button>
+          )}
           <Button onClick={() => deleteTask(todo.id)}>Delete</Button>
         </TodoItemContainer>
       ));

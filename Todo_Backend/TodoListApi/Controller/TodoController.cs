@@ -16,10 +16,37 @@ namespace TodoListApi.Controllers
             _context = context;
         }
 
+        // [HttpGet]
+        // public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
+        // {
+        //     return await _context.TodoItems.ToListAsync();
+        // }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
+        public async Task<IActionResult> GetTodos(string status, DateTime? dueDate, string sortBy, bool ascending)
         {
-            return await _context.TodoItems.ToListAsync();
+            IQueryable<TodoItem> query = _context.TodoItems;
+
+            if (!string.IsNullOrEmpty(status) && status.ToLower() != "all")
+            {
+                query = query.Where(todo => todo.Status == status);
+            }
+
+            if (dueDate.HasValue)
+            {
+                query = query.Where(todo => todo.DueDate.Date == dueDate.Value.Date);
+            }
+
+            query = sortBy switch
+            {
+                "due-date" => ascending ? query.OrderBy(todo => todo.DueDate) : query.OrderByDescending(todo => todo.DueDate),
+                "name" => ascending ? query.OrderBy(todo => todo.Name) : query.OrderByDescending(todo => todo.Name),
+                _ => query
+            };
+
+            var todos = await query.ToListAsync();
+
+            return Ok(todos);
         }
 
         [HttpGet("{id}")]
@@ -45,7 +72,7 @@ namespace TodoListApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(int id, TodoItem todoItem)
+        public async Task<IActionResult> PutTodoItem(long id, TodoItem todoItem)
         {
             if (id != todoItem.Id)
             {
@@ -88,7 +115,7 @@ namespace TodoListApi.Controllers
             return NoContent();
         }
 
-        private bool TodoItemExists(int id)
+        private bool TodoItemExists(long id)
         {
             return _context.TodoItems.Any(e => e.Id == id);
         }

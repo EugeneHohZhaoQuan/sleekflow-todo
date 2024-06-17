@@ -93,9 +93,9 @@ const FilterSort: React.FC<FilterSortProps> = ({
                 onChange={handleFilterChange}
               >
                 <option value="all">All</option>
-                <option value="not-started">Not Started</option>
-                <option value="in-progress">In Progress</option>
-                <option value="complete">Complete</option>
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Complete">Complete</option>
               </select>
             </FormGroup>
             <FormGroup>

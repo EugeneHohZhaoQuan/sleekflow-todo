@@ -5,3 +5,13 @@ export interface TodoItem {
   dueDate: Date;
   status: string;
 }
+
+export interface FilterOptions {
+  status: string;
+  dueDate: string;
+}
+
+export interface SortOptions {
+  sortBy: string;
+  order: string;
+}

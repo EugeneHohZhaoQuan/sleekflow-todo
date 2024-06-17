@@ -1,6 +1,6 @@
 // src/api/getTodoApi.ts
 import axios from 'axios';
-import { TodoItem } from '../types/types';
+import { FilterOptions, SortOptions, TodoItem } from '../types/types';
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:5252/api',
@@ -9,8 +9,25 @@ const axiosInstance = axios.create({
   },
 });
 
-const getTodoItems = async (): Promise<TodoItem[]> => {
-  const response = await axiosInstance.get('/todo');
+const getTodoItems = async (
+  filterOptions: FilterOptions,
+  sortOptions: SortOptions,
+): Promise<TodoItem[]> => {
+  const { status, dueDate } = filterOptions;
+  const { sortBy, order } = sortOptions;
+  const ascending = order === 'asc';
+
+  const dueDateUtc = dueDate ? new Date(dueDate).toISOString() : '';
+
+  const response = await axiosInstance.get('/todo', {
+    params: {
+      status,
+      dueDate: dueDateUtc,
+      sortBy,
+      ascending,
+    },
+  });
+
   return response.data;
 };
 
