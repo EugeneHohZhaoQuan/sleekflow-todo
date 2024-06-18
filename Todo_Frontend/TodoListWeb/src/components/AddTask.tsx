@@ -10,6 +10,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { TodoItem } from '../types/types';
+import { formatDateToString } from '../common/CommonFunc';
 
 interface AddTaskProps {
   handleFormSubmit: (task: TodoItem) => void;
@@ -46,6 +47,7 @@ export const AddTask: React.FC<AddTaskProps> = ({ handleFormSubmit }) => {
     setShowForm(false);
     setName('');
     setDescription('');
+    setDueDate(new Date());
     setIsRotating(false);
   };
 
@@ -71,13 +73,13 @@ export const AddTask: React.FC<AddTaskProps> = ({ handleFormSubmit }) => {
               placeholder="Description"
               required
             />
-            {/* <TaskInput
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            placeholder="Due Date"
-            required
-          /> */}
+            <TaskInput
+              type="date"
+              value={formatDateToString(dueDate)}
+              onChange={(e) => setDueDate(new Date(e.target.value))}
+              placeholder="Due Date"
+              required
+            />
             <SubmitButton type="submit">Add Task</SubmitButton>
           </TaskForm>
         </TaskFormContainer>

@@ -54,7 +54,7 @@ const TodoList: React.FC = () => {
       id: generateNumericID(),
       name: task.name,
       description: task.description,
-      dueDate: new Date(),
+      dueDate: task.dueDate,
       status: 'Not Started',
     };
 
@@ -98,7 +98,12 @@ const TodoList: React.FC = () => {
           <div>{todo.description}</div>
           <div>{formatDate(todo.dueDate.toString())}</div>
           {todo.status !== 'Complete' && (
-            <Button onClick={() => updateTask(todo.id, todo)}>Update</Button>
+            <Button
+              style={{ backgroundColor: '#448361' }}
+              onClick={() => updateTask(todo.id, todo)}
+            >
+              Update
+            </Button>
           )}
           <Button onClick={() => deleteTask(todo.id)}>Delete</Button>
         </TodoItemContainer>
@@ -115,18 +120,27 @@ const TodoList: React.FC = () => {
       </div>
       <>
         <TaskBoardContainer>
-          <Column>
-            <ColumnTitle>Not Started</ColumnTitle>
-            {renderTasks('Not Started')}
-          </Column>
-          <Column>
-            <ColumnTitle>In Progress</ColumnTitle>
-            {renderTasks('In Progress')}
-          </Column>
-          <Column>
-            <ColumnTitle>Complete</ColumnTitle>
-            {renderTasks('Complete')}
-          </Column>
+          {(filterOptions.status === 'all' ||
+            filterOptions.status === 'Not Started') && (
+            <Column>
+              <ColumnTitle>Not Started</ColumnTitle>
+              {renderTasks('Not Started')}
+            </Column>
+          )}
+          {(filterOptions.status === 'all' ||
+            filterOptions.status === 'In Progress') && (
+            <Column>
+              <ColumnTitle>In Progress</ColumnTitle>
+              {renderTasks('In Progress')}
+            </Column>
+          )}
+          {(filterOptions.status === 'all' ||
+            filterOptions.status === 'Complete') && (
+            <Column>
+              <ColumnTitle>Completed</ColumnTitle>
+              {renderTasks('Complete')}
+            </Column>
+          )}
         </TaskBoardContainer>
       </>
     </TodoContainer>

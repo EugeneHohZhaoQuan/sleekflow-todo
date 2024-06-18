@@ -2,7 +2,8 @@ import styled from 'styled-components';
 
 export const TaskBoardContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* grid-template-columns: repeat(3, 1fr); */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
   padding: 16px;
 `;
