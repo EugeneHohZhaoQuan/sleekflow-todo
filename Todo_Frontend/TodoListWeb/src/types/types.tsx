@@ -15,3 +15,15 @@ export interface SortOptions {
   sortBy: string;
   order: string;
 }
+
+export interface Login {
+  usernameOrEmail: string;
+  password: string;
+}
+
+export interface Signup {
+  username: string;
+  email: string;
+  password: string;
+  passwordHash: string;
+}

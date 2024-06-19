@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import { todoApi } from '../api/getTodoApi';
+import { todoApi } from '../api/todoApi';
 import { FilterOptions, SortOptions, TodoItem } from '../types/types';
 import {
   Button,
