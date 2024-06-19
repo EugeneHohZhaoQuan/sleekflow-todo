@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { Login, Signup } from '../types/types';
 
 const axiosInstance = axios.create({
@@ -11,22 +11,18 @@ const axiosInstance = axios.create({
 const postSignUp = async (credentials: Signup) => {
   try {
     const response = await axiosInstance.post('/signup', credentials);
-
     return response.data;
-  } catch (error) {
-    console.error(error);
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
 const postLogin = async (credentials: Login) => {
   try {
     const response = await axiosInstance.post('/login', credentials);
-
     return response.data;
-  } catch (error) {
-    console.error(error);
-    throw error;
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 

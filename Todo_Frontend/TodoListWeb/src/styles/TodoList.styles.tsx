@@ -9,7 +9,6 @@ export const TaskBoardContainer = styled.div`
 `;
 
 export const Column = styled.div`
-  background: #f4f4f4;
   border-radius: 8px;
   padding: 16px;
   display: flex;
@@ -17,10 +16,17 @@ export const Column = styled.div`
   gap: 16px;
 `;
 
-export const ColumnTitle = styled.h2`
+export const ColumnTitle = styled.h2<{ status: string }>`
+  letter-spacing: -1px;
   margin: 0;
   padding-bottom: 16px;
-  border-bottom: 2px solid #ddd;
+  text-transform: uppercase;
+  ${(props) =>
+    props.status === 'Not Started'
+      ? 'border-bottom: 2px solid #ffcc00;'
+      : props.status === 'In Progress'
+      ? 'border-bottom: 2px solid #00aaff;'
+      : 'border-bottom: 2px solid #4caf50;'}
 `;
 
 export const TodoItemContainer = styled.div`
@@ -54,4 +60,12 @@ export const Button = styled.button`
 
 export const TodoContainer = styled.div`
   margin-top: 16px;
+`;
+
+export const TaskContainer = styled.div`
+  border-radius: 8px;
+  background: #f3f7fd;
+  padding: 5px;
+  gap: 10px;
+  display: grid;
 `;

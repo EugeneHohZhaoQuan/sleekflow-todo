@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { authApi } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
+import {
+  Button,
+  ErrorMessage,
+  Input,
+  LoginContainer,
+  SignUpLink,
+  Title,
+} from '../styles/Login.styles';
 
 export const Login = () => {
   const [username, setUsername] = useState('');
@@ -17,27 +25,34 @@ export const Login = () => {
       password: password,
     });
 
-    navigate('/home');
+    if (response === 'Authentication successful.') {
+      navigate('/home');
+    } else {
+      setMessage(response);
+    }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <input
+    <LoginContainer>
+      {message !== null && <ErrorMessage>{message}</ErrorMessage>}
+      <Title>Login</Title>
+      <Input
         type="text"
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
-      <input
+      <Input
         type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleLogin}>Login</button>
-      <a href="/signup">Sign Up</a>
-    </div>
+      <Button onClick={handleLogin}>Login</Button>
+      <div>
+        Don't have an account ? <SignUpLink href="/signup">Sign Up</SignUpLink>
+      </div>
+    </LoginContainer>
   );
 };
 

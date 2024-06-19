@@ -10,11 +10,13 @@ import {
   TaskBoardContainer,
   TodoItemContainer,
   TodoContainer,
+  TaskContainer,
 } from '../styles/TodoList.styles';
 
-import FilterSort from './FilterSort';
-import AddTask from './AddTask';
+import FilterSort from '../components/FilterSort';
+import AddTask from '../components/AddTask';
 import { formatDate, generateNumericID } from '../common/CommonFunc';
+import TodoTask from '../components/TodoItem';
 
 const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<TodoItem[]>([]);
@@ -62,23 +64,13 @@ const TodoList: React.FC = () => {
     fetchTodos();
   };
 
-  const handleCheckboxChange = async (todo: TodoItem) => {
-    const updatedTask = {
-      ...todo,
-      status: 'Complete',
-    };
-
-    await updateTodoApi(todo.id, updatedTask);
-    fetchTodos();
-  };
-
   const updateTask = async (id: number, todo: TodoItem) => {
     const updatedTask = {
       ...todo,
-      status: todo.status === 'Not Started' ? 'In Progress' : 'Complete',
+      dueDate: new Date(todo.dueDate),
     };
 
-    await updateTodoApi(todo.id, updatedTask);
+    await updateTodoApi(id, updatedTask);
     fetchTodos();
   };
 
@@ -86,27 +78,13 @@ const TodoList: React.FC = () => {
     todos
       .filter((todo) => todo.status === status)
       .map((todo) => (
-        <TodoItemContainer key={todo.id}>
-          <div>
-            {/* <Checkbox
-            type="checkbox"
-            onChange={() => handleCheckboxChange(todo)}
-            checked={todo.status === 'Complete'}
-          /> */}
-            <span>{todo.name}</span>
-          </div>
-          <div>{todo.description}</div>
-          <div>{formatDate(todo.dueDate.toString())}</div>
-          {todo.status !== 'Complete' && (
-            <Button
-              style={{ backgroundColor: '#448361' }}
-              onClick={() => updateTask(todo.id, todo)}
-            >
-              Update
-            </Button>
-          )}
-          <Button onClick={() => deleteTask(todo.id)}>Delete</Button>
-        </TodoItemContainer>
+        <TodoTask
+          key={todo.id}
+          todo={todo}
+          updateTask={updateTask}
+          deleteTask={deleteTask}
+          formatDate={formatDate}
+        />
       ));
 
   return (
@@ -123,22 +101,22 @@ const TodoList: React.FC = () => {
           {(filterOptions.status === 'all' ||
             filterOptions.status === 'Not Started') && (
             <Column>
-              <ColumnTitle>Not Started</ColumnTitle>
-              {renderTasks('Not Started')}
+              <ColumnTitle status="Not Started">Not Started</ColumnTitle>
+              <TaskContainer>{renderTasks('Not Started')}</TaskContainer>
             </Column>
           )}
           {(filterOptions.status === 'all' ||
             filterOptions.status === 'In Progress') && (
             <Column>
-              <ColumnTitle>In Progress</ColumnTitle>
-              {renderTasks('In Progress')}
+              <ColumnTitle status="In Progress">In Progress</ColumnTitle>
+              <TaskContainer>{renderTasks('In Progress')}</TaskContainer>
             </Column>
           )}
           {(filterOptions.status === 'all' ||
             filterOptions.status === 'Complete') && (
             <Column>
-              <ColumnTitle>Completed</ColumnTitle>
-              {renderTasks('Complete')}
+              <ColumnTitle status="Completed">Completed</ColumnTitle>
+              <TaskContainer>{renderTasks('Complete')}</TaskContainer>
             </Column>
           )}
         </TaskBoardContainer>

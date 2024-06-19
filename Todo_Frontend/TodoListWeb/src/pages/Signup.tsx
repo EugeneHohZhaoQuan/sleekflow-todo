@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 import { authApi } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
+import { Button, Input, SignUpContainer, Title } from '../styles/Signup.styles';
+import { ErrorMessage, SignUpLink } from '../styles/Login.styles';
 
 const SignUp: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -19,33 +21,40 @@ const SignUp: React.FC = () => {
       passwordHash: '',
     });
 
-    navigate('/');
+    if (response === 'User signed up successfully.') {
+      navigate('/');
+    } else {
+      setMessage(response);
+    }
   };
 
   return (
-    <div>
-      <h2>Sign Up</h2>
-      <input
+    <SignUpContainer>
+      {message !== null && <ErrorMessage>{message}</ErrorMessage>}
+      <Title>Sign Up</Title>
+      <Input
         type="text"
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
-      <input
+      <Input
         type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <input
+      <Input
         type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleSignUp}>Sign Up</button>
-      <p>{message}</p>
-    </div>
+      <Button onClick={handleSignUp}>Sign Up</Button>
+      <div>
+        Back to <SignUpLink href="/">Login</SignUpLink>
+      </div>
+    </SignUpContainer>
   );
 };
 
