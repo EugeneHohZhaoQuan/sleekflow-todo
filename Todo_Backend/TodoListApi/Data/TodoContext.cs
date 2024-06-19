@@ -9,6 +9,8 @@ namespace TodoListApi.Data
         {
         }
 
-        public DbSet<TodoItem> TodoItems { get; set; }        
+        public DbSet<TodoItem> TodoItems { get; set; }       
+
+        public DbSet<User> Users { get; set; } 
     }
 }

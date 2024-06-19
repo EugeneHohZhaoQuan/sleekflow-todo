@@ -104,3 +104,4 @@
 /Users/eugenehoh/sleekflow-todo/Todo_Backend/TodoListApi/obj/Debug/net8.0/TodoListApi.pdb
 /Users/eugenehoh/sleekflow-todo/Todo_Backend/TodoListApi/obj/Debug/net8.0/TodoListApi.genruntimeconfig.cache
 /Users/eugenehoh/sleekflow-todo/Todo_Backend/TodoListApi/obj/Debug/net8.0/ref/TodoListApi.dll
+/Users/eugenehoh/sleekflow-todo/Todo_Backend/TodoListApi/bin/Debug/net8.0/BCrypt.Net-Core.dll
